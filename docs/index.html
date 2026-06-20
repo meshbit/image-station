@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>惜染图库 — 随机图片站</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg-card: #14141f;
+    --bg-hover: #1e1e2e;
+    --text: #e0e0e0;
+    --text-dim: #888;
+    --accent: #7c3aed;
+    --accent-glow: rgba(124, 58, 237, 0.3);
+    --border: #2a2a3a;
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  .header {
+    position: sticky; top:0; z-index:100;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .header h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #a78bfa, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    white-space: nowrap;
+  }
+  .header-actions {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .btn {
+    padding: 10px 20px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-card);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+    white-space: nowrap;
+  }
+  .btn:hover { background: var(--bg-hover); border-color: var(--accent); }
+  .btn-accent {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-weight: 600;
+  }
+  .btn-accent:hover { box-shadow: 0 0 20px var(--accent-glow); }
+  .count-badge {
+    background: var(--bg-hover);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+
+  /* Category bar */
+  .cat-bar {
+    padding: 12px 24px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+    scrollbar-width: thin;
+  }
+  .cat-bar::-webkit-scrollbar { height:4px; }
+  .cat-bar::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+  .cat-chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 0.82rem;
+    white-space: nowrap;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .cat-chip:hover { border-color: var(--accent); color: var(--text); }
+  .cat-chip.active {
+    background: var(--accent); border-color: var(--accent); color: #fff;
+  }
+
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    padding: 24px;
+  }
+  .card {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.3s;
+    aspect-ratio: 3/4;
+    min-height: 200px;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+    border-color: var(--accent);
+  }
+  .card img, .card video {
+    width: 100%; height: 100%; object-fit: cover;
+    display: block;
+  }
+  .card .overlay {
+    position: absolute; bottom:0; left:0; right:0;
+    padding: 16px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .card:hover .overlay { opacity: 1; }
+  .card .cat-label {
+    font-size: 0.75rem;
+    color: #aaa;
+  }
+
+  /* Loading */
+  .loading {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 40px;
+    color: var(--text-dim);
+    font-size: 1rem;
+  }
+  .spinner {
+    display: inline-block;
+    width: 32px; height: 32px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 8px;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* Lightbox */
+  .lightbox {
+    display: none;
+    position: fixed; inset:0; z-index:1000;
+    background: rgba(0,0,0,0.92);
+    backdrop-filter: blur(10px);
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img, .lightbox video {
+    max-width: 92vw; max-height: 92vh;
+    border-radius: 8px;
+    box-shadow: 0 0 60px rgba(124,58,237,0.15);
+  }
+  .lightbox .close-btn {
+    position: absolute; top:20px; right:24px;
+    font-size: 2rem; color: #fff; cursor: pointer;
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    transition: background 0.2s;
+    z-index: 1001;
+  }
+  .lightbox .close-btn:hover { background: rgba(255,255,255,0.2); }
+  .lightbox .nav-btn {
+    position: absolute; top:50%; transform:translateY(-50%);
+    font-size: 2rem; color: #fff;
+    width: 48px; height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    cursor: pointer;
+    transition: background 0.2s;
+    z-index: 1001;
+    user-select: none;
+  }
+  .lightbox .nav-btn:hover { background: rgba(255,255,255,0.2); }
+  .lightbox .nav-prev { left: 16px; }
+  .lightbox .nav-next { right: 16px; }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    z-index: 2000;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+
+  /* Empty state */
+  .empty {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 80px 24px;
+    color: var(--text-dim);
+  }
+  .empty .icon { font-size: 3rem; margin-bottom: 12px; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .header { padding: 10px 16px; }
+    .header h1 { font-size: 1.1rem; }
+    .btn { padding: 8px 14px; font-size: 0.8rem; }
+    .cat-bar { padding: 8px 12px; gap: 6px; }
+    .cat-chip { padding: 5px 10px; font-size: 0.75rem; }
+    .grid {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 10px; padding: 12px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🎨 惜染图库</h1>
+  <div class="header-actions">
+    <span class="count-badge" id="imgCount">0 张</span>
+    <button class="btn btn-accent" onclick="shuffleAll()">🎲 随机换一批</button>
+    <button class="btn" onclick="loadMore()">📥 加载更多</button>
+    <button class="btn" onclick="clearGrid()">🗑 清空</button>
+  </div>
+</div>
+
+<div class="cat-bar" id="catBar"></div>
+
+<div class="grid" id="grid">
+  <div class="empty"><div class="icon">🖼️</div><p>点击上方分类开始浏览图片</p></div>
+</div>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <span class="close-btn" onclick="closeLightbox()">✕</span>
+  <span class="nav-btn nav-prev" onclick="navLightbox(-1, event)">‹</span>
+  <span class="nav-btn nav-next" onclick="navLightbox(1, event)">›</span>
+  <div id="lightboxContent"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+  ? '/api/jsonapi.php'
+  : 'https://img.okva.cc/api/jsonapi.php';
+
+const CATEGORIES = ["3440X1440壁纸","AI绘画","AI绘画自生成","cnmbz.com网站图片","cosplay图片","cosplay视频","cos图","代码","优质小姐姐视频","喵糖映画套图","头像","妹子套图","小姐姐横屏视频","小姐姐竖屏视频","小姐姐视频","快手小姐姐视频","手机端-man图片","手机端-动漫图片","手机端-动物图片","手机端-城市图片","手机端-影视图片","手机端-情感图片","手机端-手绘图片","手机端-文字图片","手机端-机械图片","手机端-游戏图片","手机端-物语图片","手机端-美女图片","手机端-视觉图片","手机端壁纸日更","抖音","抖音小姐姐视频","朋友圈背景图","本人使用壁纸","王者荣耀原画壁纸","电脑端-4K图片","电脑端-你的名字图片","电脑端-动漫图片","电脑端-植物图片","电脑端-美女图片","电脑端-谷歌每日图片","表情包"];
+
+let activeCategory = null;
+let images = [];
+let lightboxIdx = -1;
+let loading = false;
+
+// Init category bar
+(function init() {
+  const bar = document.getElementById('catBar');
+  CATEGORIES.forEach(cat => {
+    const chip = document.createElement('span');
+    chip.className = 'cat-chip';
+    chip.textContent = cat;
+    chip.onclick = () => selectCategory(cat);
+    bar.appendChild(chip);
+  });
+})();
+
+function selectCategory(cat) {
+  activeCategory = cat;
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.toggle('active', c.textContent === cat));
+  images = [];
+  document.getElementById('grid').innerHTML = '';
+  loadBatch(8);
+}
+
+async function loadBatch(count = 4) {
+  if (!activeCategory) { toast('请先选择一个分类'); return; }
+  if (loading) return;
+  loading = true;
+  showLoading();
+
+  const promises = [];
+  for (let i = 0; i < count; i++) {
+    promises.push(fetchImage(activeCategory));
+  }
+  const results = await Promise.allSettled(promises);
+  loading = false;
+  hideLoading();
+
+  const newUrls = results
+    .filter(r => r.status === 'fulfilled' && r.value)
+    .map(r => r.value);
+  images.push(...newUrls);
+  renderGrid();
+  updateCount();
+}
+
+async function fetchImage(category) {
+  try {
+    const resp = await fetch(`${API_BASE}?type=${encodeURIComponent(category)}`);
+    const data = await resp.json();
+    return data.url || null;
+  } catch { return null; }
+}
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  const existing = grid.querySelectorAll('.card').length;
+  const newItems = images.slice(existing);
+
+  newItems.forEach((url, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.onclick = () => openLightbox(existing + i);
+
+    const isVideo = /\.(mp4|webm|mov)$/i.test(url);
+    if (isVideo) {
+      const vid = document.createElement('video');
+      vid.src = url;
+      vid.preload = 'metadata';
+      card.appendChild(vid);
+    } else {
+      const img = document.createElement('img');
+      img.src = url;
+      img.loading = 'lazy';
+      img.onerror = function() { this.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" x="50" text-anchor="middle" fill="%23666">🖼</text></svg>'; };
+      card.appendChild(img);
+    }
+
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.innerHTML = `<span class="cat-label">${activeCategory}</span>`;
+    card.appendChild(overlay);
+
+    grid.appendChild(card);
+  });
+
+  if (images.length === 0 && !loading) {
+    grid.innerHTML = '<div class="empty"><div class="icon">😕</div><p>该分类暂无图片</p></div>';
+  }
+}
+
+function showLoading() {
+  const grid = document.getElementById('grid');
+  if (!grid.querySelector('.loading')) {
+    const div = document.createElement('div');
+    div.className = 'loading';
+    div.innerHTML = '<div class="spinner"></div><p>加载中...</p>';
+    grid.appendChild(div);
+  }
+}
+function hideLoading() {
+  const el = document.querySelector('.loading');
+  if (el) el.remove();
+}
+
+function updateCount() {
+  document.getElementById('imgCount').textContent = images.length + ' 张';
+}
+
+async function shuffleAll() {
+  if (!activeCategory) { toast('请先选择一个分类'); return; }
+  images = [];
+  document.getElementById('grid').innerHTML = '';
+  await loadBatch(12);
+}
+
+async function loadMore() {
+  if (!activeCategory) { toast('请先选择一个分类'); return; }
+  await loadBatch(8);
+}
+
+function clearGrid() {
+  images = [];
+  document.getElementById('grid').innerHTML = '<div class="empty"><div class="icon">🖼️</div><p>点击上方分类开始浏览图片</p></div>';
+  updateCount();
+}
+
+// Lightbox
+function openLightbox(idx) {
+  lightboxIdx = idx;
+  const el = document.getElementById('lightbox');
+  const content = document.getElementById('lightboxContent');
+  const url = images[idx];
+  const isVideo = /\.(mp4|webm|mov)$/i.test(url);
+  content.innerHTML = isVideo
+    ? `<video src="${url}" controls autoplay loop style="max-width:92vw;max-height:92vh;border-radius:8px;"></video>`
+    : `<img src="${url}" alt="">`;
+  el.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(e) {
+  if (e && e.target !== document.getElementById('lightbox')) return;
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+  lightboxIdx = -1;
+}
+
+function navLightbox(dir, e) {
+  if (e) e.stopPropagation();
+  const newIdx = lightboxIdx + dir;
+  if (newIdx >= 0 && newIdx < images.length) {
+    openLightbox(newIdx);
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (lightboxIdx >= 0) {
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') navLightbox(-1, e);
+    if (e.key === 'ArrowRight') navLightbox(1, e);
+  }
+});
+
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
+}
+</script>
+</body>
+</html>
