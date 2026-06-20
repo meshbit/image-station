@@ -4,115 +4,107 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>惜染图库 — 高清美图 动漫 壁纸 AI绘画 COS</title>
-<meta name="description" content="惜染图库 — 42 个分类随机高清图片站，高清壁纸、动漫美图、AI绘画、COS写真，每日更新。">
+<meta name="description" content="惜染图库 — 高清随机图片站，动漫美图、AI绘画、cosplay、手机壁纸，每日更新。">
 <meta property="og:title" content="惜染图库">
-<meta property="og:description" content="42 个分类随机高清图片站，高清壁纸、动漫美图、AI绘画、COS写真">
+<meta property="og:description" content="高清随机图片站，动漫美图、AI绘画、cosplay、手机壁纸">
 <meta property="og:url" content="https://meshbit.github.io/image-station/">
 <link rel="canonical" href="https://meshbit.github.io/image-station/">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config = {
   darkMode: 'class',
-  theme: {
-    extend: {
-      width: {
-        '6/12': '50%', '4/12': '33.333333%', '3/12': '25%', '1/5': '20%'
-      }
-    }
-  }
+  theme: { extend: {
+    width: { '6/12': '50%', '4/12': '33.333333%', '3/12': '25%', '1/5': '20%', '1/3': '33.333333%', '1/6': '16.666667%' }
+  }}
 }
 </script>
 <style>
-  .masonry-item { transition: opacity .5s ease, transform .5s ease; }
+  .masonry-item { transition: opacity .5s ease, transform .5s ease; position: absolute; }
   .masonry-item.entering { opacity: 0; transform: translateY(20px); }
-  .nprogress-bar { position: fixed; top: 0; left: 0; z-index: 9999; height: 3px; background: linear-gradient(90deg, #ec4899, #8b5cf6, #3b82f6); width: 0; transition: width .3s ease; }
-  .nprogress-bar.loading { width: 70%; }
-  .nprogress-bar.done { width: 100%; opacity: 0; transition: width .3s ease, opacity .4s ease .3s; }
   .lightbox-overlay { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
   @keyframes heartBeat { 0%,100%{transform:scale(1)} 15%{transform:scale(1.3)} 30%{transform:scale(1)} 45%{transform:scale(1.15)} 60%{transform:scale(1)} }
   .heart-anim { animation: heartBeat .8s ease; }
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
   .dark ::-webkit-scrollbar-thumb { background: #475569; }
-  #masonry-grid { position: relative; }
-  #masonry-grid .masonry-item { position: absolute; transition: left .4s ease, top .4s ease; }
 </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-700 text-black dark:text-white min-h-screen">
 
-<!-- Progress bar -->
-<div class="nprogress-bar" id="nprogress"></div>
-
-<!-- ====== NAVBAR ====== -->
+<!-- ====== TOP NAVBAR ====== -->
 <nav class="fixed inset-x-0 top-0 z-[52] border-b border-slate-200 dark:border-slate-800 backdrop-blur-xl saturate-200 bg-white/80 dark:bg-gray-800/80">
-  <div class="max-w-screen-2xl mx-auto px-4 h-[65px] flex items-center justify-between">
-    <a href="/" class="flex items-center gap-2.5 font-bold text-xl tracking-tight shrink-0" onclick="navigate(event,'home')">
-      <span class="w-9 h-9 rounded-lg bg-gradient-to-br from-pink-500 to-violet-600 flex items-center justify-center text-white text-sm">惜</span>
-      <span class="bg-gradient-to-r from-pink-500 to-violet-600 bg-clip-text text-transparent hidden sm:inline">惜染图库</span>
+  <div class="max-w-screen-2xl mx-auto px-4 h-[65px] flex items-center justify-between gap-4">
+    <a href="/" class="flex items-center gap-2 shrink-0">
+      <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-violet-600 flex items-center justify-center text-white text-sm font-bold">惜</span>
+      <span class="font-bold text-lg tracking-tight hidden sm:inline">惜染图库</span>
     </a>
-    <div class="flex items-center gap-3 flex-1 max-w-md mx-4">
-      <div class="relative flex-1">
+    <div class="flex-1 max-w-sm hidden sm:block">
+      <div class="relative">
         <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
-        <input type="text" id="searchInput" placeholder="搜索图集..." class="w-full pl-10 pr-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700 border border-transparent focus:border-pink-400 focus:bg-white dark:focus:bg-gray-600 outline-none text-sm transition-all" oninput="filterCards()">
+        <input type="text" id="searchInput" placeholder="Search..." class="w-full pl-9 pr-4 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 border border-transparent focus:border-pink-400 focus:bg-white dark:focus:bg-gray-600 outline-none text-sm transition-all" oninput="filterCards()">
       </div>
     </div>
-    <div class="flex items-center gap-2">
-      <button onclick="randomPost()" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="随便看看" aria-label="随便看看">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+    <div class="flex items-center gap-1 shrink-0">
+      <button onclick="document.getElementById('searchInput').focus()" class="sm:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" aria-label="打开搜索">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
       </button>
-      <button onclick="toggleDark()" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="切换深浅模式" aria-label="切换深浅模式">
-        <svg id="darkIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21.752 15.002A9.72 9.72 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998Z"/></svg>
-      </button>
+      <button class="px-3 py-1.5 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">登录</button>
+      <button class="px-3 py-1.5 text-sm rounded-lg bg-pink-500 hover:bg-pink-600 text-white transition-colors">注册</button>
     </div>
   </div>
 </nav>
 
-<!-- ====== CATEGORY MENU ====== -->
+<!-- ====== CATEGORY MENU BAR ====== -->
 <div class="fixed inset-x-0 top-[65px] z-[51] bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg border-b border-slate-100 dark:border-slate-700">
-  <div class="max-w-screen-2xl mx-auto px-4 flex items-center gap-1 overflow-x-auto scrollbar-hide py-2">
-    <a href="#" onclick="navigate(event,'home')" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors bg-pink-50 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400" data-page="home">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m2.25 12 8.954-8.955a1.126 1.126 0 0 1 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
-      首页
-    </a>
-    <a href="#" onclick="navigate(event,'square')" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-100 dark:hover:bg-gray-700" data-page="square">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m3.75 6.75 4.5 4.5-4.5 4.5m6-9 4.5 4.5-4.5 4.5m6-9 4.5 4.5-4.5 4.5"/></svg>
-      美图广场
-    </a>
-    <span class="text-gray-300 dark:text-gray-600 mx-1">|</span>
-    <span class="text-xs text-gray-400 dark:text-gray-500 font-medium px-1">热门分类</span>
+  <div class="max-w-screen-2xl mx-auto px-4 flex items-center gap-2 overflow-x-auto scrollbar-hide py-2.5">
+    <a href="#" onclick="navigate(event,'home')" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors bg-pink-50 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400" data-page="home">首页</a>
+    <a href="#" onclick="filterByCategory('妹子套图')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-100 dark:hover:bg-gray-700">明星网红</a>
+    <a href="#" onclick="filterByCategory('AI绘画')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-100 dark:hover:bg-gray-700">动漫美图</a>
+    <span class="text-gray-300 dark:text-gray-600 mx-1 text-sm">Pages</span>
+    <a href="#" onclick="randomPost()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-100 dark:hover:bg-gray-700">随便看看</a>
+    <a href="#" onclick="navigate(event,'square')" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-100 dark:hover:bg-gray-700" data-page="square">美图广场</a>
+    <a href="#" onclick="navigate(event,'links')" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-100 dark:hover:bg-gray-700" data-page="links">关于</a>
   </div>
 </div>
 
 <!-- ====== MAIN CONTENT ====== -->
-<main id="mainContent" class="pt-[110px] pb-16 transition-all duration-500">
+<main class="pt-[120px] pb-16 transition-all duration-500">
   <div class="max-w-screen-2xl mx-auto px-2 sm:px-4">
 
-    <!-- Page: Home (Waterfall) -->
+    <!-- HOME PAGE -->
     <div id="page-home" class="page-content">
       <div id="masonry-grid" class="relative w-full" style="min-height:600px"></div>
-      <div class="flex justify-center mt-8">
-        <button id="loadMoreBtn" onclick="loadMore()" class="px-8 py-2.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md hover:border-pink-300 dark:hover:border-pink-700 text-sm font-medium transition-all">
-          加载更多
-        </button>
+      <div class="flex justify-center mt-8 mb-10">
+        <button id="loadMoreBtn" onclick="loadMore()" class="px-8 py-2.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md hover:border-pink-300 dark:hover:border-pink-700 text-sm font-medium transition-all">加载更多</button>
+      </div>
+
+      <!-- SECTION: 动漫美图 -->
+      <div class="mb-10">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold">动漫美图</h2>
+          <a href="#" onclick="filterByCategory('AI绘画');window.scrollTo({top:0,behavior:'smooth'})" class="text-sm text-pink-500 hover:text-pink-600">更多 →</a>
+        </div>
+        <div id="section-anime" class="flex flex-wrap -mx-1"></div>
+      </div>
+
+      <!-- SECTION: 明星网红 -->
+      <div class="mb-10">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold">明星网红</h2>
+          <a href="#" onclick="filterByCategory('妹子套图');window.scrollTo({top:0,behavior:'smooth'})" class="text-sm text-pink-500 hover:text-pink-600">更多 →</a>
+        </div>
+        <div id="section-star" class="flex flex-wrap -mx-1"></div>
       </div>
     </div>
 
-    <!-- Page: Square (Banner + category filter) -->
+    <!-- SQUARE PAGE -->
     <div id="page-square" class="page-content hidden">
-      <div class="relative rounded-2xl overflow-hidden mb-8 h-48 sm:h-64">
-        <div id="bannerSlides" class="h-full"></div>
-      </div>
+      <div class="relative rounded-2xl overflow-hidden mb-8 h-48 sm:h-64" id="bannerSlides"></div>
       <div class="flex flex-wrap gap-2 mb-6" id="squareTagFilter"></div>
       <div id="squareGrid" class="flex flex-wrap -mx-1 sm:-mx-2"></div>
     </div>
 
-    <!-- Page: Archive (Timeline) -->
-    <div id="page-archive" class="page-content hidden">
-      <div class="max-w-2xl mx-auto" id="archiveList"></div>
-    </div>
-
-    <!-- Page: Links -->
+    <!-- LINKS PAGE -->
     <div id="page-links" class="page-content hidden">
       <div class="max-w-2xl mx-auto" id="linksList"></div>
     </div>
@@ -125,7 +117,7 @@ tailwind.config = {
   <a href="#" onclick="randomPost();return false" class="w-10 h-10 flex items-center justify-center rounded-lg shadow backdrop-blur-xl saturate-200 bg-white/80 dark:bg-gray-800/80 hover:scale-110 transition-transform" title="随便看看" aria-label="随便看看">
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
   </a>
-  <button onclick="toggleDark()" class="w-10 h-10 flex items-center justify-center rounded-lg shadow backdrop-blur-xl saturate-200 bg-white/80 dark:bg-gray-800/80 hover:scale-110 transition-transform" title="深浅模式切换" aria-label="深浅模式切换">
+  <button onclick="toggleDark()" class="w-10 h-10 flex items-center justify-center rounded-lg shadow backdrop-blur-xl saturate-200 bg-white/80 dark:bg-gray-800/80 hover:scale-110 transition-transform" title="网页深浅模式切换" aria-label="网页深浅模式切换">
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21.752 15.002A9.72 9.72 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998Z"/></svg>
   </button>
   <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="w-10 h-10 flex items-center justify-center rounded-lg shadow backdrop-blur-xl saturate-200 bg-white/80 dark:bg-gray-800/80 hover:scale-110 transition-transform" title="返回顶部" aria-label="返回顶部">
@@ -135,7 +127,7 @@ tailwind.config = {
 
 <!-- ====== FOOTER ====== -->
 <footer class="text-center py-6 text-sm text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-gray-700">
-  © 2026 惜染图库 · Powered by <a href="https://hefollo.com" class="hover:text-pink-500 transition-colors" target="_blank">Hefollo</a>
+  © Copyright 2026 Theme By <a href="https://github.com/meshbit/image-station" class="hover:text-pink-500 transition-colors" target="_blank">MiLi</a>
 </footer>
 
 <!-- ====== LIGHTBOX ====== -->
@@ -150,7 +142,7 @@ tailwind.config = {
   <div class="absolute top-4 left-1/2 -translate-x-1/2 text-white/70 text-sm" id="lightboxCounter"></div>
   <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4">
     <button class="px-4 py-1.5 rounded-full bg-white/10 hover:bg-pink-500/80 text-white text-sm transition-colors" onclick="event.stopPropagation();likeCurrent()" id="lightboxLike">
-      <span class="mr-1">♥</span><span id="lightboxLikeCount">0</span>
+      ♥ <span id="lightboxLikeCount">0</span>
     </button>
   </div>
   <img id="lightboxImg" class="max-h-[85vh] max-w-[90vw] object-contain rounded-lg shadow-2xl" src="" alt="" onclick="event.stopPropagation()">
@@ -159,10 +151,9 @@ tailwind.config = {
 <script>
 // ====== CONFIG ======
 const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? `http://localhost:8088/api`
-  : `https://img.okva.cc/api`;
+  ? 'http://localhost:8088/api'
+  : 'https://img.okva.cc/api';
 
-// Hefollo real categories (一级分类 from api.hefollo.com)
 const CATEGORIES = [
   'AI绘画','优质小姐姐视频','头像','妹子套图','小姐姐视频',
   '手机端-man图片','手机端-动漫图片','手机端-动物图片','手机端-城市图片',
@@ -175,8 +166,6 @@ const CATEGORIES = [
   '本人使用壁纸','喵糖映画套图'
 ];
 
-const PAGE_SIZE = 18;
-let currentPage = 0;
 let allImages = [];
 let lightboxImages = [];
 let lightboxIndex = 0;
@@ -191,40 +180,25 @@ if (localStorage.getItem('dark') === 'true' || (!localStorage.getItem('dark') &&
   document.documentElement.classList.add('dark');
 }
 
-// ====== PJAX NAVIGATION ======
+// ====== NAVIGATION ======
 function navigate(e, page) {
   if (e) e.preventDefault();
-  const bar = document.getElementById('nprogress');
-  bar.classList.add('loading');
-  bar.classList.remove('done');
-
   document.querySelectorAll('.nav-link').forEach(l => {
     l.classList.remove('bg-pink-50','dark:bg-pink-900/30','text-pink-600','dark:text-pink-400');
-    l.classList.add('hover:bg-gray-100','dark:hover:bg-gray-700');
   });
   const active = document.querySelector(`[data-page="${page}"]`);
   if (active) {
     active.classList.add('bg-pink-50','dark:bg-pink-900/30','text-pink-600','dark:text-pink-400');
-    active.classList.remove('hover:bg-gray-100','dark:hover:bg-gray-700');
   }
-
   document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
   const target = document.getElementById('page-' + page);
   if (target) target.classList.remove('hidden');
-
-  setTimeout(() => {
-    bar.classList.remove('loading');
-    bar.classList.add('done');
-    setTimeout(() => bar.classList.remove('done'), 400);
-  }, 300);
-
-  if (page === 'home') masonryLayout();
+  window.scrollTo({top: 0, behavior: 'smooth'});
   if (page === 'square') buildSquare();
-  if (page === 'archive') buildArchive();
   if (page === 'links') buildLinks();
 }
 
-// ====== FETCH IMAGES ======
+// ====== FETCH IMAGES (parallel) ======
 async function fetchImages(category, count = 30) {
   const encodedCat = encodeURIComponent(category);
   const promises = [];
@@ -232,45 +206,29 @@ async function fetchImages(category, count = 30) {
     promises.push(
       fetch(`${API_BASE}/AllJsonApi.php?type=${encodedCat}`)
         .then(r => r.json())
-        .then(data => data.url ? {
-          url: data.url,
-          thumb: data.url,
-          title: category,
-          category: category,
-          count: Math.floor(Math.random() * 30) + 5
-        } : null)
+        .then(data => data.url ? { url: data.url, thumb: data.url, title: category, category, count: Math.floor(Math.random()*30)+5 } : null)
         .catch(() => null)
     );
   }
-  const results = await Promise.all(promises);
-  return results.filter(Boolean);
+  return (await Promise.all(promises)).filter(Boolean);
 }
 
-async function fetchRandom(count = 30) {
-  const cat = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
-  return fetchImages(cat, count);
-}
-
-// ====== BUILD CARD HTML ======
-function cardHTML(img, index) {
-  const id = `img-${index}`;
+// ====== CARD HTML ======
+function cardHTML(img, index, small) {
+  const cls = small
+    ? 'w-1/2 sm:w-1/3 xl:w-1/6 p-1 sm:p-2'
+    : 'w-6/12 sm:w-4/12 lg:w-3/12 2xl:w-1/5 p-1 sm:p-2 lg:p-2.5';
   return `
-    <article class="masonry-item w-6/12 sm:w-4/12 lg:w-3/12 2xl:w-1/5 p-1 sm:p-2 lg:p-2.5 group" data-id="${id}" data-cat="${img.category}" data-title="${img.title}" data-url="${img.url}">
+    <article class="masonry-item ${cls} group" data-id="img-${index}" data-cat="${img.category}" data-title="${img.title}" data-url="${img.url}">
       <div class="relative overflow-hidden rounded-lg bg-white dark:bg-black shadow-lg">
-        <a href="#" onclick="openLightbox(event, '${id}')" class="block text-sm text-white">
-          <img class="min-h-36 object-cover w-full transition-all duration-500 group-hover:scale-110 lazy"
-               src="${img.thumb || img.url}" alt="${img.title}" loading="lazy"
-               onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 300 450%22><rect fill=%22%23f1f5f9%22 width=%22300%22 height=%22450%22/><text x=%22150%22 y=%22225%22 text-anchor=%22middle%22 fill=%22%2394a3b8%22 font-size=%2214%22>加载失败</text></svg>'">
-          <div class="absolute top-2 -right-full bg-white/90 text-black dark:bg-black/80 dark:text-white py-0.5 px-2 rounded-md transition-all duration-300 group-hover:right-2 text-xs font-medium">
-            ${img.count}P
-          </div>
+        <a href="#" onclick="openLightbox(event,'img-${index}')" class="block text-sm text-white">
+          <img class="min-h-36 object-cover w-full transition-all duration-500 group-hover:scale-110" src="${img.url}" alt="${img.title}" loading="lazy" onerror="this.parentElement.parentElement.style.display='none'">
+          <div class="absolute top-2 -right-full bg-white/90 dark:bg-black/80 dark:text-white text-black py-0.5 px-2 rounded-md transition-all duration-300 group-hover:right-2 text-xs font-medium">${img.count}P</div>
           <div class="absolute inset-x-2 -bottom-full backdrop-blur-sm bg-black/50 p-2 rounded-md transition-all duration-300 group-hover:bottom-2">
             <div class="text-xs line-clamp-2">${img.title}</div>
           </div>
         </a>
-        <a href="#" onclick="event.stopPropagation();filterByCategory('${img.category}')" class="absolute top-2 left-2 bg-black/50 hover:bg-pink-500/80 text-white rounded-xl text-xs px-2.5 py-0.5 transition-colors">
-          ${img.category}
-        </a>
+        <a href="#" onclick="event.stopPropagation();filterByCategory('${img.category}')" class="absolute top-2 left-2 bg-black/50 hover:bg-pink-500/80 text-white rounded-xl text-xs px-2.5 py-0.5 transition-colors">${img.category}</a>
       </div>
     </article>`;
 }
@@ -278,141 +236,105 @@ function cardHTML(img, index) {
 // ====== MASONRY LAYOUT ======
 function masonryLayout() {
   const grid = document.getElementById('masonry-grid');
-  if (!grid) return;
   const items = grid.querySelectorAll('.masonry-item');
   if (!items.length) return;
-
-  const gap = 8;
-  const containerWidth = grid.offsetWidth;
-
-  let colCount;
-  if (containerWidth >= 1536) colCount = 5;
-  else if (containerWidth >= 1024) colCount = 4;
-  else if (containerWidth >= 640) colCount = 3;
-  else colCount = 2;
-
-  const colWidth = (containerWidth - gap * (colCount - 1)) / colCount;
-  const colHeights = new Array(colCount).fill(0);
-
+  const gap = 8, cw = grid.offsetWidth;
+  let cols = cw >= 1536 ? 5 : cw >= 1024 ? 4 : cw >= 640 ? 3 : 2;
+  const colW = (cw - gap*(cols-1)) / cols;
+  const hts = new Array(cols).fill(0);
   items.forEach(item => {
-    const img = item.querySelector('img');
-    const h = img && img.naturalHeight ? (colWidth / img.naturalWidth) * img.naturalHeight : colWidth * 1.5;
-    const minIdx = colHeights.indexOf(Math.min(...colHeights));
-    item.style.width = colWidth + 'px';
-    item.style.left = minIdx * (colWidth + gap) + 'px';
-    item.style.top = colHeights[minIdx] + 'px';
-    colHeights[minIdx] += h + gap;
+    const ih = colW * 1.5;
+    const mi = hts.indexOf(Math.min(...hts));
+    item.style.width = colW + 'px';
+    item.style.left = mi*(colW+gap) + 'px';
+    item.style.top = hts[mi] + 'px';
+    hts[mi] += ih + gap;
   });
-
-  grid.style.height = Math.max(...colHeights) + 'px';
+  grid.style.height = Math.max(...hts) + 'px';
 }
 
-// ====== LOAD MORE ======
+// ====== LOAD INITIAL ======
 async function loadInitial() {
   const grid = document.getElementById('masonry-grid');
   grid.innerHTML = '';
   allImages = [];
-
-  const cats = CATEGORIES.sort(() => Math.random() - 0.5).slice(0, 3);
-  const fetchPromises = cats.map(cat => fetchImages(cat, 6));
-  const results = await Promise.all(fetchPromises);
+  const cats = CATEGORIES.sort(() => Math.random()-0.5).slice(0, 3);
+  const results = await Promise.all(cats.map(c => fetchImages(c, 6)));
   results.forEach(imgs => allImages.push(...imgs));
-
-  // Shuffle
-  allImages.sort(() => Math.random() - 0.5);
+  allImages.sort(() => Math.random()-0.5);
   renderBatch(0, allImages.length);
+
+  // Load section rows
+  loadSection('section-anime', 'AI绘画');
+  loadSection('section-star', '妹子套图');
 }
 
 function renderBatch(start, count) {
   const grid = document.getElementById('masonry-grid');
-  const batch = allImages.slice(start, start + count);
-  const startIdx = start;
-  batch.forEach((img, i) => {
-    grid.insertAdjacentHTML('beforeend', cardHTML(img, startIdx + i));
-  });
-
-  const newItems = grid.querySelectorAll(`.masonry-item:nth-child(n+${start+1})`);
-  newItems.forEach(item => {
-    item.classList.add('entering');
-    requestAnimationFrame(() => {
-      item.classList.remove('entering');
-    });
-  });
-
-  setTimeout(masonryLayout, 100);
+  for (let i = start; i < start+count && i < allImages.length; i++) {
+    grid.insertAdjacentHTML('beforeend', cardHTML(allImages[i], i));
+  }
+  setTimeout(masonryLayout, 150);
 }
 
 async function loadMore() {
   const btn = document.getElementById('loadMoreBtn');
-  btn.textContent = '加载中…';
-  btn.disabled = true;
-
-  const cat = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
-  const imgs = await fetchImages(cat, 10);
-  const prevLen = allImages.length;
+  btn.textContent = '加载中…'; btn.disabled = true;
+  const cat = CATEGORIES[Math.floor(Math.random()*CATEGORIES.length)];
+  const imgs = await fetchImages(cat, 6);
+  const prev = allImages.length;
   allImages.push(...imgs);
-  renderBatch(prevLen, imgs.length);
+  renderBatch(prev, imgs.length);
+  btn.textContent = '加载更多'; btn.disabled = false;
+}
 
-  btn.textContent = '加载更多';
-  btn.disabled = false;
+async function loadSection(id, cat) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = '<div class="text-center text-gray-400 text-sm py-4 w-full">加载中…</div>';
+  const imgs = await fetchImages(cat, 6);
+  el.innerHTML = imgs.map((img, i) => cardHTML(img, i, true).replace('masonry-item', '')).join('');
 }
 
 // ====== LIGHTBOX ======
 function openLightbox(e, id) {
   e.preventDefault();
-  const item = document.querySelector(`[data-id="${id}"]`);
-  if (!item) return;
-
-  const allItems = [...document.querySelectorAll('.masonry-item')];
-  lightboxImages = allItems.map(el => ({
-    url: el.dataset.url,
-    title: el.dataset.title,
-    category: el.dataset.cat,
-    id: el.dataset.id
-  }));
+  const allItems = [...document.querySelectorAll('[data-url]')].filter(el => el.dataset.url && el.dataset.url.startsWith('http'));
+  lightboxImages = allItems.map(el => ({ url: el.dataset.url, title: el.dataset.title, category: el.dataset.cat, id: el.dataset.id || el.getAttribute('data-id') }));
   lightboxIndex = lightboxImages.findIndex(img => img.id === id);
+  if (lightboxIndex < 0) lightboxIndex = 0;
   updateLightbox();
   document.getElementById('lightbox').classList.remove('hidden');
   document.body.style.overflow = 'hidden';
 }
-
 function updateLightbox() {
   const img = lightboxImages[lightboxIndex];
   if (!img) return;
   document.getElementById('lightboxImg').src = img.url;
-  document.getElementById('lightboxCounter').textContent = `${lightboxIndex + 1} / ${lightboxImages.length}`;
+  document.getElementById('lightboxCounter').textContent = `${lightboxIndex+1} / ${lightboxImages.length}`;
   document.getElementById('lightboxLikeCount').textContent = likes[img.id] || 0;
 }
-
-function closeLightbox(e) {
-  if (e && e.target !== document.getElementById('lightbox')) return;
-  document.getElementById('lightbox').classList.add('hidden');
-  document.body.style.overflow = '';
-}
-
-function lightboxNext() { lightboxIndex = (lightboxIndex + 1) % lightboxImages.length; updateLightbox(); }
-function lightboxPrev() { lightboxIndex = (lightboxIndex - 1 + lightboxImages.length) % lightboxImages.length; updateLightbox(); }
-
+function closeLightbox(e) { if (e && e.target !== document.getElementById('lightbox')) return; document.getElementById('lightbox').classList.add('hidden'); document.body.style.overflow = ''; }
+function lightboxNext() { lightboxIndex = (lightboxIndex+1) % lightboxImages.length; updateLightbox(); }
+function lightboxPrev() { lightboxIndex = (lightboxIndex-1+lightboxImages.length) % lightboxImages.length; updateLightbox(); }
 function likeCurrent() {
   const img = lightboxImages[lightboxIndex];
   if (!img) return;
-  likes[img.id] = (likes[img.id] || 0) + 1;
+  likes[img.id] = (likes[img.id]||0)+1;
   document.getElementById('lightboxLikeCount').textContent = likes[img.id];
-  document.getElementById('lightboxLike').classList.add('heart-anim');
-  setTimeout(() => document.getElementById('lightboxLike').classList.remove('heart-anim'), 800);
+  const btn = document.getElementById('lightboxLike');
+  btn.classList.add('heart-anim');
+  setTimeout(() => btn.classList.remove('heart-anim'), 800);
 }
 
 // ====== FILTER & SEARCH ======
 function filterCards() {
   const q = document.getElementById('searchInput').value.toLowerCase();
-  document.querySelectorAll('.masonry-item').forEach(item => {
-    const title = (item.dataset.title || '').toLowerCase();
-    const cat = (item.dataset.cat || '').toLowerCase();
-    item.style.display = (!q || title.includes(q) || cat.includes(q)) ? '' : 'none';
+  document.querySelectorAll('#masonry-grid .masonry-item').forEach(item => {
+    item.style.display = (!q || (item.dataset.title||'').toLowerCase().includes(q) || (item.dataset.cat||'').toLowerCase().includes(q)) ? '' : 'none';
   });
-  setTimeout(masonryLayout, 50);
+  setTimeout(masonryLayout, 100);
 }
-
 function filterByCategory(cat) {
   document.getElementById('searchInput').value = cat;
   filterCards();
@@ -420,123 +342,81 @@ function filterByCategory(cat) {
 
 // ====== RANDOM POST ======
 function randomPost() {
-  const visible = [...document.querySelectorAll('.masonry-item')].filter(el => el.style.display !== 'none');
-  if (visible.length) {
-    const rand = visible[Math.floor(Math.random() * visible.length)];
-    openLightbox(new Event('click'), rand.dataset.id);
-  }
+  const visible = [...document.querySelectorAll('[data-url]')].filter(el => el.style.display !== 'none' && el.dataset.url);
+  if (visible.length) openLightbox(new Event('click'), visible[Math.floor(Math.random()*visible.length)].dataset.id || visible[Math.floor(Math.random()*visible.length)].getAttribute('data-id'));
 }
 
 // ====== SQUARE PAGE ======
 async function buildSquare() {
   const banner = document.getElementById('bannerSlides');
+  const colors = ['from-pink-400 to-rose-500','from-violet-400 to-purple-500','from-blue-400 to-cyan-500','from-emerald-400 to-teal-500','from-amber-400 to-orange-500'];
   const cats = CATEGORIES.slice(0, 5);
-  banner.innerHTML = cats.map((c, i) => `
-    <div class="absolute inset-0 transition-opacity duration-700 ${i===0?'opacity-100':'opacity-0'}" data-banner="${i}">
-      <div class="h-full bg-gradient-to-r ${['from-pink-400 to-rose-500','from-violet-400 to-purple-500','from-blue-400 to-cyan-500','from-emerald-400 to-teal-500','from-amber-400 to-orange-500'][i]} flex items-center justify-center">
-        <span class="text-white text-2xl sm:text-4xl font-bold">${c}</span>
-      </div>
-    </div>
-  `).join('');
-
-  let bIdx = 0;
+  banner.innerHTML = cats.map((c, i) => `<div class="absolute inset-0 transition-opacity duration-700 ${i===0?'opacity-100':'opacity-0'}" data-bn="${i}"><div class="h-full bg-gradient-to-r ${colors[i]} flex items-center justify-center"><span class="text-white text-2xl sm:text-4xl font-bold">${c}</span></div></div>`).join('');
+  let bi = 0;
   setInterval(() => {
-    document.querySelectorAll('#bannerSlides > div').forEach((d, i) => {
-      d.classList.toggle('opacity-100', i === (bIdx + 1) % cats.length);
-      d.classList.toggle('opacity-0', i !== (bIdx + 1) % cats.length);
-    });
-    bIdx = (bIdx + 1) % cats.length;
+    document.querySelectorAll('#bannerSlides > div').forEach((d, i) => d.classList.toggle('opacity-100', i===(bi+1)%cats.length) || d.classList.toggle('opacity-0', i!==(bi+1)%cats.length));
+    bi = (bi+1)%cats.length;
   }, 3000);
 
-  const tagFilter = document.getElementById('squareTagFilter');
-  tagFilter.innerHTML = '<button onclick="filterSquare(\'all\')\" class="px-4 py-1.5 rounded-full bg-pink-500 text-white text-sm font-medium transition-colors sq-tag" data-sqtag="all">全部</button>' +
-    CATEGORIES.slice(0, 20).map(c => `<button onclick="filterSquare('${c}')" class="px-4 py-1.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 hover:border-pink-300 dark:hover:border-pink-700 text-sm transition-colors sq-tag" data-sqtag="${c}">${c}</button>`).join('');
+  document.getElementById('squareTagFilter').innerHTML = '<button onclick="filterSquare(\'all\')" class="px-4 py-1.5 rounded-full bg-pink-500 text-white text-sm font-medium sq-tag">全部</button>' +
+    CATEGORIES.slice(0, 16).map(c => `<button onclick="filterSquare('${c}')" class="px-4 py-1.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 hover:border-pink-300 text-sm sq-tag">${c}</button>`).join('');
 
-  const grid = document.getElementById('squareGrid');
-  grid.innerHTML = '';
-  const imgs = await fetchRandom(24);
-  allImages = imgs;
+  const imgs = await fetchImages(CATEGORIES[Math.floor(Math.random()*CATEGORIES.length)], 12);
   renderSquare(imgs);
 }
-
 function renderSquare(imgs) {
-  const grid = document.getElementById('squareGrid');
-  grid.innerHTML = imgs.map((img, i) => cardHTML(img, i).replace('masonry-item', '')).join('');
+  document.getElementById('squareGrid').innerHTML = imgs.map((img, i) => `
+    <article class="w-6/12 sm:w-4/12 lg:w-3/12 2xl:w-1/5 p-1 sm:p-2 group" data-id="sq-${i}" data-cat="${img.category}" data-url="${img.url}" data-title="${img.title}">
+      <div class="relative overflow-hidden rounded-lg bg-white dark:bg-black shadow-lg">
+        <a href="#" onclick="openLightbox(event,'sq-${i}')" class="block text-sm text-white">
+          <img class="min-h-36 object-cover w-full transition-all duration-500 group-hover:scale-110" src="${img.url}" alt="${img.title}" loading="lazy" onerror="this.parentElement.parentElement.style.display='none'">
+          <div class="absolute top-2 -right-full bg-white/90 text-black py-0.5 px-2 rounded-md transition-all duration-300 group-hover:right-2 text-xs font-medium">${img.count}P</div>
+          <div class="absolute inset-x-2 -bottom-full backdrop-blur-sm bg-black/50 p-2 rounded-md transition-all duration-300 group-hover:bottom-2"><div class="text-xs">${img.title}</div></div>
+        </a>
+      </div>
+    </article>`).join('');
 }
-
 async function filterSquare(cat) {
   document.querySelectorAll('.sq-tag').forEach(b => {
-    b.classList.toggle('bg-pink-500', b.dataset.sqtag === cat);
-    b.classList.toggle('text-white', b.dataset.sqtag === cat);
-    b.classList.toggle('bg-white', b.dataset.sqtag !== cat);
-    b.classList.toggle('dark:bg-gray-800', b.dataset.sqtag !== cat);
+    const isActive = b.textContent === cat || (cat === 'all' && b.textContent === '全部');
+    b.className = isActive ? 'px-4 py-1.5 rounded-full bg-pink-500 text-white text-sm font-medium sq-tag' : 'px-4 py-1.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 hover:border-pink-300 text-sm sq-tag';
   });
-  const imgs = cat === 'all' ? await fetchRandom(24) : await fetchImages(cat, 24);
+  const imgs = cat === 'all' ? await fetchImages(CATEGORIES[Math.floor(Math.random()*CATEGORIES.length)], 12) : await fetchImages(cat, 12);
   renderSquare(imgs);
-}
-
-// ====== ARCHIVE PAGE ======
-function buildArchive() {
-  const list = document.getElementById('archiveList');
-  list.innerHTML = CATEGORIES.slice(0, 20).map(c => `
-    <div class="flex items-center gap-4 py-4 border-b border-gray-100 dark:border-gray-700 group cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-750 px-3 rounded-lg transition-colors" onclick="filterByCategory('${c}');navigate(event,'home')">
-      <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-violet-500 flex items-center justify-center text-white font-bold shrink-0 group-hover:scale-110 transition-transform">${c[0]}</div>
-      <div class="flex-1 min-w-0">
-        <div class="font-medium">${c}</div>
-        <div class="text-xs text-gray-400">${Math.floor(Math.random()*500)+100} 张图片</div>
-      </div>
-      <svg class="w-4 h-4 text-gray-300 group-hover:text-pink-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
-    </div>
-  `).join('');
 }
 
 // ====== LINKS PAGE ======
 function buildLinks() {
-  const list = document.getElementById('linksList');
-  const links = [
-    { name: 'Hefollo 图库', url: 'https://hefollo.com', desc: '高质量图片API服务' },
-    { name: '米粒萌图', url: 'https://mili.typecho.fans', desc: 'Typecho 美图主题演示站' },
+  document.getElementById('linksList').innerHTML = [
+    { name: 'Hefollo 图库', url: 'https://hefollo.com', desc: '高质量随机图片 API' },
     { name: '惜染工具箱', url: 'https://meshbit.github.io/my-toolbox/', desc: '98 个在线实用工具' },
-    { name: 'GitHub', url: 'https://github.com/meshbit/image-station', desc: '本项目开源仓库' }
-  ];
-  list.innerHTML = links.map(l => `
-    <a href="${l.url}" target="_blank" class="flex items-center gap-4 py-4 px-4 border border-gray-100 dark:border-gray-700 rounded-xl mb-3 hover:shadow-md hover:border-pink-200 dark:hover:border-pink-800 transition-all group">
-      <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-100 to-violet-100 dark:from-pink-900/30 dark:to-violet-900/30 flex items-center justify-center text-lg shrink-0 group-hover:scale-110 transition-transform">🔗</div>
-      <div class="min-w-0">
-        <div class="font-medium group-hover:text-pink-500 transition-colors">${l.name}</div>
-        <div class="text-xs text-gray-400">${l.desc}</div>
-      </div>
-      <svg class="w-4 h-4 text-gray-300 group-hover:text-pink-400 shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
-    </a>
-  `).join('');
+    { name: 'GitHub', url: 'https://github.com/meshbit/image-station', desc: '本站开源仓库' },
+    { name: 'API 文档', url: 'https://api.hefollo.com', desc: 'Hefollo 图库 API 接口' }
+  ].map(l => `
+    <a href="${l.url}" target="_blank" class="flex items-center gap-4 py-4 px-4 border border-gray-100 dark:border-gray-700 rounded-xl mb-3 hover:shadow-md hover:border-pink-200 transition-all group">
+      <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-100 to-violet-100 dark:from-pink-900/30 dark:to-violet-900/30 flex items-center justify-center text-lg shrink-0">🔗</div>
+      <div class="min-w-0"><div class="font-medium group-hover:text-pink-500 transition-colors">${l.name}</div><div class="text-xs text-gray-400">${l.desc}</div></div>
+      <svg class="w-4 h-4 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
+    </a>`).join('');
 }
 
 // ====== INFINITE SCROLL ======
-const observer = new IntersectionObserver((entries) => {
-  if (entries[0].isIntersecting && document.getElementById('page-home') && !document.getElementById('page-home').classList.contains('hidden')) {
-    loadMore();
-  }
+const io = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting && !document.getElementById('page-home').classList.contains('hidden')) loadMore();
 }, { threshold: 0.1 });
-setTimeout(() => {
-  const btn = document.getElementById('loadMoreBtn');
-  if (btn) observer.observe(btn);
-}, 1000);
+setTimeout(() => { const btn = document.getElementById('loadMoreBtn'); if (btn) io.observe(btn); }, 2000);
 
 // ====== KEYBOARD ======
 document.addEventListener('keydown', e => {
-  const lb = document.getElementById('lightbox');
-  if (lb.classList.contains('hidden')) return;
+  if (document.getElementById('lightbox').classList.contains('hidden')) return;
   if (e.key === 'ArrowRight') lightboxNext();
   if (e.key === 'ArrowLeft') lightboxPrev();
   if (e.key === 'Escape') closeLightbox();
 });
 
 // ====== RESIZE ======
-let resizeTimer;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(masonryLayout, 200);
-});
+let rt;
+window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(masonryLayout, 300); });
 
 // ====== INIT ======
 loadInitial();
