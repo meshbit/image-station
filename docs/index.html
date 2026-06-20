@@ -14,7 +14,7 @@
 tailwind.config = {
   darkMode: 'class',
   theme: { extend: {
-    width: { '6/12': '50%', '4/12': '33.333333%', '3/12': '25%', '1/5': '20%', '1/3': '33.333333%', '1/6': '16.666667%' }
+    width: { '6/12': '50%', '4/12': '33.333333%', '3/12': '25%', '1/5': '20%', '1/2': '50%', '1/3': '33.333333%', '1/6': '16.666667%' }
   }}
 }
 </script>
@@ -27,25 +27,33 @@ tailwind.config = {
   ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
   .dark ::-webkit-scrollbar-thumb { background: #475569; }
+  @media (max-width: 1023px) { #sidebar { transform: translateX(-100%); } #sidebar.open { transform: translateX(0); } }
 </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-700 text-black dark:text-white min-h-screen">
 
+<!-- ====== MOBILE MENU TOGGLE ====== -->
+<button onclick="document.getElementById('sidebar').classList.toggle('open')" class="lg:hidden fixed top-[17px] left-4 z-[60] p-2 rounded-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur shadow" aria-label="菜单">
+  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+</button>
+
 <!-- ====== TOP NAVBAR ====== -->
 <nav class="fixed inset-x-0 top-0 z-[52] border-b border-slate-200 dark:border-slate-800 backdrop-blur-xl saturate-200 bg-white/80 dark:bg-gray-800/80">
-  <div class="max-w-screen-2xl mx-auto px-4 h-[65px] flex items-center justify-between gap-4">
-    <a href="/" class="flex items-center gap-2 shrink-0">
-      <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-violet-600 flex items-center justify-center text-white text-sm font-bold">惜</span>
-      <span class="font-bold text-lg tracking-tight hidden sm:inline">惜染图库</span>
-    </a>
-    <div class="flex-1 max-w-sm hidden sm:block">
+  <div class="h-[65px] px-4 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <a href="/" class="flex items-center gap-2 shrink-0">
+        <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-violet-600 flex items-center justify-center text-white text-sm font-bold">惜</span>
+        <span class="font-bold text-lg tracking-tight hidden sm:inline">惜染图库</span>
+      </a>
+    </div>
+    <div class="flex-1 max-w-sm mx-4 hidden sm:block">
       <div class="relative">
         <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
         <input type="text" id="searchInput" placeholder="Search..." class="w-full pl-9 pr-4 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 border border-transparent focus:border-pink-400 focus:bg-white dark:focus:bg-gray-600 outline-none text-sm transition-all" oninput="filterCards()">
       </div>
     </div>
     <div class="flex items-center gap-1 shrink-0">
-      <button onclick="document.getElementById('searchInput').focus()" class="sm:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" aria-label="打开搜索">
+      <button onclick="document.getElementById('searchInput').focus()" class="sm:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="打开搜索">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
       </button>
       <button class="px-3 py-1.5 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">登录</button>
@@ -54,25 +62,46 @@ tailwind.config = {
   </div>
 </nav>
 
-<!-- ====== CATEGORY MENU BAR ====== -->
-<div class="fixed inset-x-0 top-[65px] z-[51] bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg border-b border-slate-100 dark:border-slate-700">
-  <div class="max-w-screen-2xl mx-auto px-4 flex items-center gap-2 overflow-x-auto scrollbar-hide py-2.5">
-    <a href="#" onclick="navigate(event,'home')" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors bg-pink-50 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400" data-page="home">首页</a>
-    <a href="#" onclick="filterByCategory('妹子套图')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-100 dark:hover:bg-gray-700">明星网红</a>
-    <a href="#" onclick="filterByCategory('AI绘画')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-100 dark:hover:bg-gray-700">动漫美图</a>
-    <span class="text-gray-300 dark:text-gray-600 mx-1 text-sm">Pages</span>
-    <a href="#" onclick="randomPost()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-100 dark:hover:bg-gray-700">随便看看</a>
-    <a href="#" onclick="navigate(event,'square')" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-100 dark:hover:bg-gray-700" data-page="square">美图广场</a>
-    <a href="#" onclick="navigate(event,'links')" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-100 dark:hover:bg-gray-700" data-page="links">关于</a>
+<!-- ====== LEFT SIDEBAR ====== -->
+<aside id="sidebar" class="fixed top-[65px] left-0 bottom-0 w-52 z-[51] bg-white dark:bg-gray-800 border-r border-gray-100 dark:border-gray-700 flex flex-col transition-transform duration-300 lg:translate-x-0 overflow-y-auto"
+  onclick="event.stopPropagation()">
+  <div class="p-4 flex flex-col gap-1 flex-1">
+    <a href="#" onclick="navigate(event,'home');closeSidebar()" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors bg-pink-50 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400" data-page="home">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m2.25 12 8.954-8.955a1.126 1.126 0 0 1 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+      首页
+    </a>
+    <a href="#" onclick="filterByCategory('妹子套图');closeSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-gray-100 dark:hover:bg-gray-700">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>
+      明星网红
+    </a>
+    <a href="#" onclick="filterByCategory('AI绘画');closeSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-gray-100 dark:hover:bg-gray-700">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.41a2.25 2.25 0 0 1 3.182 0l2.909 2.91m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
+      动漫美图
+    </a>
+    <div class="mt-4 mb-1 px-3">
+      <p class="text-xs text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wider">Pages</p>
+    </div>
+    <a href="#" onclick="randomPost();closeSidebar()" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-gray-100 dark:hover:bg-gray-700">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+      随便看看
+    </a>
+    <a href="#" onclick="navigate(event,'square');closeSidebar()" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-gray-100 dark:hover:bg-gray-700" data-page="square">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6Zm0 9.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6Zm0 9.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg>
+      美图广场
+    </a>
+    <a href="#" onclick="navigate(event,'links');closeSidebar()" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-gray-100 dark:hover:bg-gray-700" data-page="links">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
+      关于
+    </a>
   </div>
-</div>
+</aside>
 
-<!-- ====== MAIN CONTENT ====== -->
-<main class="pt-[120px] pb-16 transition-all duration-500">
-  <div class="max-w-screen-2xl mx-auto px-2 sm:px-4">
+<!-- ====== MAIN CONTENT (offset for sidebar) ====== -->
+<main id="mainContent" class="pt-[65px] lg:pl-52 transition-all duration-500 min-h-screen">
+  <div class="px-2 sm:px-4 pb-16">
 
     <!-- HOME PAGE -->
-    <div id="page-home" class="page-content">
+    <div id="page-home" class="page-content pt-4">
       <div id="masonry-grid" class="relative w-full" style="min-height:600px"></div>
       <div class="flex justify-center mt-8 mb-10">
         <button id="loadMoreBtn" onclick="loadMore()" class="px-8 py-2.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md hover:border-pink-300 dark:hover:border-pink-700 text-sm font-medium transition-all">加载更多</button>
@@ -98,14 +127,14 @@ tailwind.config = {
     </div>
 
     <!-- SQUARE PAGE -->
-    <div id="page-square" class="page-content hidden">
+    <div id="page-square" class="page-content hidden pt-4">
       <div class="relative rounded-2xl overflow-hidden mb-8 h-48 sm:h-64" id="bannerSlides"></div>
       <div class="flex flex-wrap gap-2 mb-6" id="squareTagFilter"></div>
       <div id="squareGrid" class="flex flex-wrap -mx-1 sm:-mx-2"></div>
     </div>
 
     <!-- LINKS PAGE -->
-    <div id="page-links" class="page-content hidden">
+    <div id="page-links" class="page-content hidden pt-4">
       <div class="max-w-2xl mx-auto" id="linksList"></div>
     </div>
 
@@ -114,19 +143,19 @@ tailwind.config = {
 
 <!-- ====== FLOATING WIDGETS ====== -->
 <div class="fixed z-40 flex flex-col items-center gap-1.5 bottom-6 right-2 md:bottom-8 md:right-4">
-  <a href="#" onclick="randomPost();return false" class="w-10 h-10 flex items-center justify-center rounded-lg shadow backdrop-blur-xl saturate-200 bg-white/80 dark:bg-gray-800/80 hover:scale-110 transition-transform" title="随便看看" aria-label="随便看看">
+  <a href="#" onclick="randomPost();return false" class="w-10 h-10 flex items-center justify-center rounded-lg shadow backdrop-blur-xl saturate-200 bg-white/80 dark:bg-gray-800/80 hover:scale-110 transition-transform" title="随便看看">
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
   </a>
-  <button onclick="toggleDark()" class="w-10 h-10 flex items-center justify-center rounded-lg shadow backdrop-blur-xl saturate-200 bg-white/80 dark:bg-gray-800/80 hover:scale-110 transition-transform" title="网页深浅模式切换" aria-label="网页深浅模式切换">
+  <button onclick="toggleDark()" class="w-10 h-10 flex items-center justify-center rounded-lg shadow backdrop-blur-xl saturate-200 bg-white/80 dark:bg-gray-800/80 hover:scale-110 transition-transform" title="网页深浅模式切换">
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21.752 15.002A9.72 9.72 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998Z"/></svg>
   </button>
-  <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="w-10 h-10 flex items-center justify-center rounded-lg shadow backdrop-blur-xl saturate-200 bg-white/80 dark:bg-gray-800/80 hover:scale-110 transition-transform" title="返回顶部" aria-label="返回顶部">
+  <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="w-10 h-10 flex items-center justify-center rounded-lg shadow backdrop-blur-xl saturate-200 bg-white/80 dark:bg-gray-800/80 hover:scale-110 transition-transform" title="返回顶部">
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
   </button>
 </div>
 
 <!-- ====== FOOTER ====== -->
-<footer class="text-center py-6 text-sm text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-gray-700">
+<footer class="lg:pl-52 text-center py-6 text-sm text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-gray-700">
   © Copyright 2026 Theme By <a href="https://github.com/meshbit/image-station" class="hover:text-pink-500 transition-colors" target="_blank">MiLi</a>
 </footer>
 
@@ -141,7 +170,7 @@ tailwind.config = {
   </button>
   <div class="absolute top-4 left-1/2 -translate-x-1/2 text-white/70 text-sm" id="lightboxCounter"></div>
   <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4">
-    <button class="px-4 py-1.5 rounded-full bg-white/10 hover:bg-pink-500/80 text-white text-sm transition-colors" onclick="event.stopPropagation();likeCurrent()" id="lightboxLike">
+    <button class="px-4 py-1.5 rounded-full bg-white/10 hover:bg-pink-500/80 text-white text-sm transition-colors" onclick="event.stopPropagation();likeCurrent()">
       ♥ <span id="lightboxLikeCount">0</span>
     </button>
   </div>
@@ -166,19 +195,22 @@ const CATEGORIES = [
   '本人使用壁纸','喵糖映画套图'
 ];
 
-let allImages = [];
-let lightboxImages = [];
-let lightboxIndex = 0;
-let likes = {};
+let allImages = [], lightboxImages = [], lightboxIndex = 0, likes = {};
 
 // ====== DARK MODE ======
 function toggleDark() {
   document.documentElement.classList.toggle('dark');
   localStorage.setItem('dark', document.documentElement.classList.contains('dark'));
 }
-if (localStorage.getItem('dark') === 'true' || (!localStorage.getItem('dark') && window.matchMedia('(prefers-color-scheme:dark)').matches)) {
+if (localStorage.getItem('dark') === 'true' || (!localStorage.getItem('dark') && matchMedia('(prefers-color-scheme:dark)').matches)) {
   document.documentElement.classList.add('dark');
 }
+
+// ====== SIDEBAR ======
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
+document.addEventListener('click', e => {
+  if (window.innerWidth < 1024 && !e.target.closest('#sidebar') && !e.target.closest('button[aria-label="菜单"]')) closeSidebar();
+});
 
 // ====== NAVIGATION ======
 function navigate(e, page) {
@@ -186,10 +218,8 @@ function navigate(e, page) {
   document.querySelectorAll('.nav-link').forEach(l => {
     l.classList.remove('bg-pink-50','dark:bg-pink-900/30','text-pink-600','dark:text-pink-400');
   });
-  const active = document.querySelector(`[data-page="${page}"]`);
-  if (active) {
-    active.classList.add('bg-pink-50','dark:bg-pink-900/30','text-pink-600','dark:text-pink-400');
-  }
+  const active = document.querySelector(`.nav-link[data-page="${page}"]`);
+  if (active) active.classList.add('bg-pink-50','dark:bg-pink-900/30','text-pink-600','dark:text-pink-400');
   document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
   const target = document.getElementById('page-' + page);
   if (target) target.classList.remove('hidden');
@@ -198,118 +228,84 @@ function navigate(e, page) {
   if (page === 'links') buildLinks();
 }
 
-// ====== FETCH IMAGES (parallel) ======
-async function fetchImages(category, count = 30) {
-  const encodedCat = encodeURIComponent(category);
-  const promises = [];
-  for (let i = 0; i < count; i++) {
-    promises.push(
-      fetch(`${API_BASE}/AllJsonApi.php?type=${encodedCat}`)
-        .then(r => r.json())
-        .then(data => data.url ? { url: data.url, thumb: data.url, title: category, category, count: Math.floor(Math.random()*30)+5 } : null)
-        .catch(() => null)
-    );
-  }
-  return (await Promise.all(promises)).filter(Boolean);
+// ====== FETCH ======
+async function fetchImages(cat, count = 30) {
+  const e = encodeURIComponent(cat);
+  const r = await Promise.all([...Array(count)].map(() =>
+    fetch(`${API_BASE}/AllJsonApi.php?type=${e}`).then(r => r.json()).then(d => d.url ? { url: d.url, thumb: d.url, title: cat, category: cat, count: ~~(Math.random()*30)+5 } : null).catch(() => null)
+  ));
+  return r.filter(Boolean);
 }
 
 // ====== CARD HTML ======
-function cardHTML(img, index, small) {
-  const cls = small
-    ? 'w-1/2 sm:w-1/3 xl:w-1/6 p-1 sm:p-2'
-    : 'w-6/12 sm:w-4/12 lg:w-3/12 2xl:w-1/5 p-1 sm:p-2 lg:p-2.5';
-  return `
-    <article class="masonry-item ${cls} group" data-id="img-${index}" data-cat="${img.category}" data-title="${img.title}" data-url="${img.url}">
-      <div class="relative overflow-hidden rounded-lg bg-white dark:bg-black shadow-lg">
-        <a href="#" onclick="openLightbox(event,'img-${index}')" class="block text-sm text-white">
-          <img class="min-h-36 object-cover w-full transition-all duration-500 group-hover:scale-110" src="${img.url}" alt="${img.title}" loading="lazy" onerror="this.parentElement.parentElement.style.display='none'">
-          <div class="absolute top-2 -right-full bg-white/90 dark:bg-black/80 dark:text-white text-black py-0.5 px-2 rounded-md transition-all duration-300 group-hover:right-2 text-xs font-medium">${img.count}P</div>
-          <div class="absolute inset-x-2 -bottom-full backdrop-blur-sm bg-black/50 p-2 rounded-md transition-all duration-300 group-hover:bottom-2">
-            <div class="text-xs line-clamp-2">${img.title}</div>
-          </div>
-        </a>
-        <a href="#" onclick="event.stopPropagation();filterByCategory('${img.category}')" class="absolute top-2 left-2 bg-black/50 hover:bg-pink-500/80 text-white rounded-xl text-xs px-2.5 py-0.5 transition-colors">${img.category}</a>
-      </div>
-    </article>`;
+function cardHTML(img, i, small) {
+  const cls = small ? 'w-1/2 sm:w-1/3 xl:w-1/6 p-1 sm:p-2' : 'w-6/12 sm:w-4/12 lg:w-3/12 2xl:w-1/5 p-1 sm:p-2 lg:p-2.5';
+  return `<article class="masonry-item ${cls} group" data-id="img-${i}" data-cat="${img.category}" data-title="${img.title}" data-url="${img.url}">
+    <div class="relative overflow-hidden rounded-lg bg-white dark:bg-black shadow-lg">
+      <a href="#" onclick="openLightbox(event,'img-${i}')" class="block text-sm text-white">
+        <img class="min-h-36 object-cover w-full transition-all duration-500 group-hover:scale-110" src="${img.url}" alt="${img.title}" loading="lazy" onerror="this.closest('article').style.display='none'">
+        <div class="absolute top-2 -right-full bg-white/90 dark:bg-black/80 dark:text-white text-black py-0.5 px-2 rounded-md transition-all duration-300 group-hover:right-2 text-xs font-medium">${img.count}P</div>
+        <div class="absolute inset-x-2 -bottom-full backdrop-blur-sm bg-black/50 p-2 rounded-md transition-all duration-300 group-hover:bottom-2"><div class="text-xs line-clamp-2">${img.title}</div></div>
+      </a>
+      <a href="#" onclick="event.stopPropagation();filterByCategory('${img.category}')" class="absolute top-2 left-2 bg-black/50 hover:bg-pink-500/80 text-white rounded-xl text-xs px-2.5 py-0.5 transition-colors">${img.category}</a>
+    </div></article>`;
 }
 
-// ====== MASONRY LAYOUT ======
+// ====== MASONRY ======
 function masonryLayout() {
-  const grid = document.getElementById('masonry-grid');
-  const items = grid.querySelectorAll('.masonry-item');
+  const g = document.getElementById('masonry-grid'), items = g.querySelectorAll('.masonry-item');
   if (!items.length) return;
-  const gap = 8, cw = grid.offsetWidth;
-  let cols = cw >= 1536 ? 5 : cw >= 1024 ? 4 : cw >= 640 ? 3 : 2;
-  const colW = (cw - gap*(cols-1)) / cols;
-  const hts = new Array(cols).fill(0);
-  items.forEach(item => {
-    const ih = colW * 1.5;
+  const gap = 8, cw = g.offsetWidth, cols = cw >= 1536 ? 5 : cw >= 1024 ? 4 : cw >= 640 ? 3 : 2;
+  const colW = (cw - gap*(cols-1)) / cols, hts = Array(cols).fill(0);
+  items.forEach(it => {
     const mi = hts.indexOf(Math.min(...hts));
-    item.style.width = colW + 'px';
-    item.style.left = mi*(colW+gap) + 'px';
-    item.style.top = hts[mi] + 'px';
-    hts[mi] += ih + gap;
+    it.style.width = colW + 'px'; it.style.left = mi*(colW+gap) + 'px'; it.style.top = hts[mi] + 'px';
+    hts[mi] += colW*1.5 + gap;
   });
-  grid.style.height = Math.max(...hts) + 'px';
+  g.style.height = Math.max(...hts) + 'px';
 }
 
-// ====== LOAD INITIAL ======
+// ====== LOAD ======
 async function loadInitial() {
-  const grid = document.getElementById('masonry-grid');
-  grid.innerHTML = '';
+  document.getElementById('masonry-grid').innerHTML = '';
   allImages = [];
   const cats = CATEGORIES.sort(() => Math.random()-0.5).slice(0, 3);
-  const results = await Promise.all(cats.map(c => fetchImages(c, 6)));
-  results.forEach(imgs => allImages.push(...imgs));
+  (await Promise.all(cats.map(c => fetchImages(c, 6)))).forEach(imgs => allImages.push(...imgs));
   allImages.sort(() => Math.random()-0.5);
   renderBatch(0, allImages.length);
-
-  // Load section rows
   loadSection('section-anime', 'AI绘画');
   loadSection('section-star', '妹子套图');
 }
-
 function renderBatch(start, count) {
-  const grid = document.getElementById('masonry-grid');
-  for (let i = start; i < start+count && i < allImages.length; i++) {
-    grid.insertAdjacentHTML('beforeend', cardHTML(allImages[i], i));
-  }
-  setTimeout(masonryLayout, 150);
+  const g = document.getElementById('masonry-grid');
+  for (let i = start; i < start+count && i < allImages.length; i++) g.insertAdjacentHTML('beforeend', cardHTML(allImages[i], i));
+  setTimeout(masonryLayout, 200);
 }
-
 async function loadMore() {
   const btn = document.getElementById('loadMoreBtn');
   btn.textContent = '加载中…'; btn.disabled = true;
-  const cat = CATEGORIES[Math.floor(Math.random()*CATEGORIES.length)];
-  const imgs = await fetchImages(cat, 6);
-  const prev = allImages.length;
-  allImages.push(...imgs);
+  const imgs = await fetchImages(CATEGORIES[~~(Math.random()*CATEGORIES.length)], 6);
+  const prev = allImages.length; allImages.push(...imgs);
   renderBatch(prev, imgs.length);
   btn.textContent = '加载更多'; btn.disabled = false;
 }
-
 async function loadSection(id, cat) {
-  const el = document.getElementById(id);
-  if (!el) return;
+  const el = document.getElementById(id); if (!el) return;
   el.innerHTML = '<div class="text-center text-gray-400 text-sm py-4 w-full">加载中…</div>';
-  const imgs = await fetchImages(cat, 6);
-  el.innerHTML = imgs.map((img, i) => cardHTML(img, i, true).replace('masonry-item', '')).join('');
+  el.innerHTML = (await fetchImages(cat, 6)).map((img, i) => cardHTML(img, i, true).replace('masonry-item', '')).join('');
 }
 
 // ====== LIGHTBOX ======
 function openLightbox(e, id) {
   e.preventDefault();
-  const allItems = [...document.querySelectorAll('[data-url]')].filter(el => el.dataset.url && el.dataset.url.startsWith('http'));
-  lightboxImages = allItems.map(el => ({ url: el.dataset.url, title: el.dataset.title, category: el.dataset.cat, id: el.dataset.id || el.getAttribute('data-id') }));
-  lightboxIndex = lightboxImages.findIndex(img => img.id === id);
-  if (lightboxIndex < 0) lightboxIndex = 0;
+  lightboxImages = [...document.querySelectorAll('[data-url]')].filter(el => el.dataset.url?.startsWith('http')).map(el => ({ url: el.dataset.url, title: el.dataset.title, category: el.dataset.cat, id: el.dataset.id || el.getAttribute('data-id') }));
+  lightboxIndex = Math.max(0, lightboxImages.findIndex(img => img.id === id));
   updateLightbox();
   document.getElementById('lightbox').classList.remove('hidden');
   document.body.style.overflow = 'hidden';
 }
 function updateLightbox() {
-  const img = lightboxImages[lightboxIndex];
-  if (!img) return;
+  const img = lightboxImages[lightboxIndex]; if (!img) return;
   document.getElementById('lightboxImg').src = img.url;
   document.getElementById('lightboxCounter').textContent = `${lightboxIndex+1} / ${lightboxImages.length}`;
   document.getElementById('lightboxLikeCount').textContent = likes[img.id] || 0;
@@ -318,16 +314,14 @@ function closeLightbox(e) { if (e && e.target !== document.getElementById('light
 function lightboxNext() { lightboxIndex = (lightboxIndex+1) % lightboxImages.length; updateLightbox(); }
 function lightboxPrev() { lightboxIndex = (lightboxIndex-1+lightboxImages.length) % lightboxImages.length; updateLightbox(); }
 function likeCurrent() {
-  const img = lightboxImages[lightboxIndex];
-  if (!img) return;
+  const img = lightboxImages[lightboxIndex]; if (!img) return;
   likes[img.id] = (likes[img.id]||0)+1;
   document.getElementById('lightboxLikeCount').textContent = likes[img.id];
-  const btn = document.getElementById('lightboxLike');
-  btn.classList.add('heart-anim');
-  setTimeout(() => btn.classList.remove('heart-anim'), 800);
+  document.getElementById('lightboxLike').classList.add('heart-anim');
+  setTimeout(() => document.getElementById('lightboxLike').classList.remove('heart-anim'), 800);
 }
 
-// ====== FILTER & SEARCH ======
+// ====== FILTER ======
 function filterCards() {
   const q = document.getElementById('searchInput').value.toLowerCase();
   document.querySelectorAll('#masonry-grid .masonry-item').forEach(item => {
@@ -335,86 +329,65 @@ function filterCards() {
   });
   setTimeout(masonryLayout, 100);
 }
-function filterByCategory(cat) {
-  document.getElementById('searchInput').value = cat;
-  filterCards();
-}
-
-// ====== RANDOM POST ======
+function filterByCategory(cat) { document.getElementById('searchInput').value = cat; filterCards(); }
 function randomPost() {
-  const visible = [...document.querySelectorAll('[data-url]')].filter(el => el.style.display !== 'none' && el.dataset.url);
-  if (visible.length) openLightbox(new Event('click'), visible[Math.floor(Math.random()*visible.length)].dataset.id || visible[Math.floor(Math.random()*visible.length)].getAttribute('data-id'));
+  const v = [...document.querySelectorAll('[data-url]')].filter(el => el.style.display !== 'none' && el.dataset.url?.startsWith('http'));
+  if (v.length) openLightbox(new Event('click'), v[~~(Math.random()*v.length)].getAttribute('data-id'));
 }
 
-// ====== SQUARE PAGE ======
+// ====== SQUARE ======
 async function buildSquare() {
-  const banner = document.getElementById('bannerSlides');
   const colors = ['from-pink-400 to-rose-500','from-violet-400 to-purple-500','from-blue-400 to-cyan-500','from-emerald-400 to-teal-500','from-amber-400 to-orange-500'];
   const cats = CATEGORIES.slice(0, 5);
-  banner.innerHTML = cats.map((c, i) => `<div class="absolute inset-0 transition-opacity duration-700 ${i===0?'opacity-100':'opacity-0'}" data-bn="${i}"><div class="h-full bg-gradient-to-r ${colors[i]} flex items-center justify-center"><span class="text-white text-2xl sm:text-4xl font-bold">${c}</span></div></div>`).join('');
+  document.getElementById('bannerSlides').innerHTML = cats.map((c, i) => `<div class="absolute inset-0 transition-opacity duration-700 ${i===0?'opacity-100':'opacity-0'}"><div class="h-full bg-gradient-to-r ${colors[i]} flex items-center justify-center"><span class="text-white text-2xl sm:text-4xl font-bold">${c}</span></div></div>`).join('');
   let bi = 0;
   setInterval(() => {
-    document.querySelectorAll('#bannerSlides > div').forEach((d, i) => d.classList.toggle('opacity-100', i===(bi+1)%cats.length) || d.classList.toggle('opacity-0', i!==(bi+1)%cats.length));
+    document.querySelectorAll('#bannerSlides > div').forEach((d, i) => { d.classList.toggle('opacity-100', i===(bi+1)%cats.length); d.classList.toggle('opacity-0', i!==(bi+1)%cats.length); });
     bi = (bi+1)%cats.length;
   }, 3000);
-
   document.getElementById('squareTagFilter').innerHTML = '<button onclick="filterSquare(\'all\')" class="px-4 py-1.5 rounded-full bg-pink-500 text-white text-sm font-medium sq-tag">全部</button>' +
     CATEGORIES.slice(0, 16).map(c => `<button onclick="filterSquare('${c}')" class="px-4 py-1.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 hover:border-pink-300 text-sm sq-tag">${c}</button>`).join('');
-
-  const imgs = await fetchImages(CATEGORIES[Math.floor(Math.random()*CATEGORIES.length)], 12);
-  renderSquare(imgs);
+  renderSquare(await fetchImages(CATEGORIES[~~(Math.random()*CATEGORIES.length)], 12));
 }
 function renderSquare(imgs) {
-  document.getElementById('squareGrid').innerHTML = imgs.map((img, i) => `
-    <article class="w-6/12 sm:w-4/12 lg:w-3/12 2xl:w-1/5 p-1 sm:p-2 group" data-id="sq-${i}" data-cat="${img.category}" data-url="${img.url}" data-title="${img.title}">
-      <div class="relative overflow-hidden rounded-lg bg-white dark:bg-black shadow-lg">
-        <a href="#" onclick="openLightbox(event,'sq-${i}')" class="block text-sm text-white">
-          <img class="min-h-36 object-cover w-full transition-all duration-500 group-hover:scale-110" src="${img.url}" alt="${img.title}" loading="lazy" onerror="this.parentElement.parentElement.style.display='none'">
-          <div class="absolute top-2 -right-full bg-white/90 text-black py-0.5 px-2 rounded-md transition-all duration-300 group-hover:right-2 text-xs font-medium">${img.count}P</div>
-          <div class="absolute inset-x-2 -bottom-full backdrop-blur-sm bg-black/50 p-2 rounded-md transition-all duration-300 group-hover:bottom-2"><div class="text-xs">${img.title}</div></div>
-        </a>
-      </div>
-    </article>`).join('');
+  document.getElementById('squareGrid').innerHTML = imgs.map((img, i) => cardHTML(img, i).replace('masonry-item', '')).join('');
 }
 async function filterSquare(cat) {
   document.querySelectorAll('.sq-tag').forEach(b => {
-    const isActive = b.textContent === cat || (cat === 'all' && b.textContent === '全部');
-    b.className = isActive ? 'px-4 py-1.5 rounded-full bg-pink-500 text-white text-sm font-medium sq-tag' : 'px-4 py-1.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 hover:border-pink-300 text-sm sq-tag';
+    const active = b.textContent === cat || (cat === 'all' && b.textContent === '全部');
+    b.className = active ? 'px-4 py-1.5 rounded-full bg-pink-500 text-white text-sm font-medium sq-tag' : 'px-4 py-1.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 hover:border-pink-300 text-sm sq-tag';
   });
-  const imgs = cat === 'all' ? await fetchImages(CATEGORIES[Math.floor(Math.random()*CATEGORIES.length)], 12) : await fetchImages(cat, 12);
-  renderSquare(imgs);
+  renderSquare(cat === 'all' ? await fetchImages(CATEGORIES[~~(Math.random()*CATEGORIES.length)], 12) : await fetchImages(cat, 12));
 }
 
-// ====== LINKS PAGE ======
+// ====== LINKS ======
 function buildLinks() {
   document.getElementById('linksList').innerHTML = [
-    { name: 'Hefollo 图库', url: 'https://hefollo.com', desc: '高质量随机图片 API' },
-    { name: '惜染工具箱', url: 'https://meshbit.github.io/my-toolbox/', desc: '98 个在线实用工具' },
+    { name: 'Hefollo 图库', url: 'https://hefollo.com', desc: '高质量随机图片API' },
+    { name: '惜染工具箱', url: 'https://meshbit.github.io/my-toolbox/', desc: '98个在线实用工具' },
     { name: 'GitHub', url: 'https://github.com/meshbit/image-station', desc: '本站开源仓库' },
-    { name: 'API 文档', url: 'https://api.hefollo.com', desc: 'Hefollo 图库 API 接口' }
-  ].map(l => `
-    <a href="${l.url}" target="_blank" class="flex items-center gap-4 py-4 px-4 border border-gray-100 dark:border-gray-700 rounded-xl mb-3 hover:shadow-md hover:border-pink-200 transition-all group">
-      <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-100 to-violet-100 dark:from-pink-900/30 dark:to-violet-900/30 flex items-center justify-center text-lg shrink-0">🔗</div>
-      <div class="min-w-0"><div class="font-medium group-hover:text-pink-500 transition-colors">${l.name}</div><div class="text-xs text-gray-400">${l.desc}</div></div>
-      <svg class="w-4 h-4 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
-    </a>`).join('');
+    { name: 'API 文档', url: 'https://api.hefollo.com', desc: 'Hefollo 图库API接口' }
+  ].map(l => `<a href="${l.url}" target="_blank" class="flex items-center gap-4 py-4 px-4 border border-gray-100 dark:border-gray-700 rounded-xl mb-3 hover:shadow-md hover:border-pink-200 transition-all group">
+    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-100 to-violet-100 dark:from-pink-900/30 dark:to-violet-900/30 flex items-center justify-center text-lg shrink-0">🔗</div>
+    <div class="min-w-0"><div class="font-medium group-hover:text-pink-500 transition-colors">${l.name}</div><div class="text-xs text-gray-400">${l.desc}</div></div>
+    <svg class="w-4 h-4 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg></a>`).join('');
 }
 
 // ====== INFINITE SCROLL ======
-const io = new IntersectionObserver(entries => {
-  if (entries[0].isIntersecting && !document.getElementById('page-home').classList.contains('hidden')) loadMore();
-}, { threshold: 0.1 });
-setTimeout(() => { const btn = document.getElementById('loadMoreBtn'); if (btn) io.observe(btn); }, 2000);
+setTimeout(() => {
+  const io = new IntersectionObserver(e => {
+    if (e[0].isIntersecting && !document.getElementById('page-home').classList.contains('hidden')) loadMore();
+  }, { threshold: 0.1 });
+  const btn = document.getElementById('loadMoreBtn'); if (btn) io.observe(btn);
+}, 2000);
 
-// ====== KEYBOARD ======
+// ====== KEYBOARD & RESIZE ======
 document.addEventListener('keydown', e => {
   if (document.getElementById('lightbox').classList.contains('hidden')) return;
   if (e.key === 'ArrowRight') lightboxNext();
   if (e.key === 'ArrowLeft') lightboxPrev();
   if (e.key === 'Escape') closeLightbox();
 });
-
-// ====== RESIZE ======
 let rt;
 window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(masonryLayout, 300); });
 
