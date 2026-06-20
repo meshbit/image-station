@@ -1,0 +1,11 @@
+# Docker volumes
+mysql/
+typecho/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
