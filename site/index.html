@@ -57,7 +57,7 @@ tailwind.config = {
           <img class="w-32 hidden dark:block" src="logo-dark.png" alt="logo">
         </a>
       </div>
-      <div class="flex-1 relative hidden sm:block">
+      <div id="searchWrap" class="flex-1 relative hidden sm:block">
         <div class="max-w-[680px] mx-auto">
           <div class="rounded-xl overflow-hidden bg-black/5 dark:bg-white/5">
             <div class="relative">
@@ -68,7 +68,7 @@ tailwind.config = {
         </div>
       </div>
       <div class="flex items-center gap-2 sm:gap-4">
-        <button onclick="document.getElementById('searchInput').focus()" class="sm:hidden p-2 rounded-full bg-slate-100 dark:bg-slate-500" aria-label="打开搜索">
+        <button onclick="toggleMobileSearch()" class="sm:hidden p-2 rounded-full bg-slate-100 dark:bg-slate-500" aria-label="搜索">
           <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
         </button>
         <button onclick="openLoginModal()" class="px-3 py-1.5 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">登录</button>
@@ -182,6 +182,16 @@ if (localStorage.getItem('dark') === 'true' || (!localStorage.getItem('dark') &&
 
 function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
 function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); document.body.style.overflow = ''; }
+
+function toggleMobileSearch() {
+  const wrap = document.getElementById('searchWrap');
+  if (wrap.classList.contains('hidden')) {
+    wrap.classList.remove('hidden');
+    document.getElementById('searchInput').focus();
+  } else {
+    wrap.classList.add('hidden');
+  }
+}
 
 function toggleSidebar() { const sb = document.getElementById('sidebar'), ov = document.getElementById('sidebarOverlay'); sb.classList.toggle('-translate-x-full'); sb.classList.toggle('translate-x-0'); ov.classList.toggle('hidden'); }
 function closeSidebar() { if (window.innerWidth >= 1024) return; document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('sidebar').classList.remove('translate-x-0'); document.getElementById('sidebarOverlay').classList.add('hidden'); }
