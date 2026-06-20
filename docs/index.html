@@ -71,8 +71,8 @@ tailwind.config = {
         <button onclick="document.getElementById('searchInput').focus()" class="sm:hidden p-2 rounded-full bg-slate-100 dark:bg-slate-500" aria-label="打开搜索">
           <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
         </button>
-        <button class="px-3 py-1.5 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">登录</button>
-        <button class="px-3 py-1.5 text-sm rounded-lg bg-sky-500 hover:bg-sky-400 text-white transition-colors">注册</button>
+        <button onclick="openLoginModal()" class="px-3 py-1.5 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">登录</button>
+        <button onclick="openLoginModal()" class="px-3 py-1.5 text-sm rounded-lg bg-sky-500 hover:bg-sky-400 text-white transition-colors">注册</button>
       </div>
     </div>
   </div>
@@ -156,6 +156,22 @@ tailwind.config = {
   <img id="lightboxImg" class="max-h-[85vh] max-w-[90vw] object-contain rounded-lg shadow-2xl" src="" alt="" onclick="event.stopPropagation()">
 </div>
 
+<!-- ====== LOGIN MODAL ====== -->
+<div id="loginModal" class="fixed inset-0 z-[60] hidden">
+  <div class="fixed inset-0 bg-gray-600/50 backdrop-blur-sm transition-opacity" onclick="closeLoginModal()"></div>
+  <div class="fixed inset-x-2 sm:inset-x-0 top-[10vh] sm:top-[15vh] flex justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-8 mx-4 w-96 max-w-full shadow-xl">
+      <h2 class="text-xl font-bold text-center mb-6">登录</h2>
+      <form onsubmit="event.preventDefault();closeLoginModal()" class="space-y-4">
+        <div><label class="block text-sm mb-1">用户名</label><input type="text" class="w-full px-3 py-2 rounded-md border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 outline-none focus:border-sky-400 transition-colors"></div>
+        <div><label class="block text-sm mb-1">密码</label><div class="relative"><input type="password" class="w-full px-3 py-2 rounded-md border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 outline-none focus:border-sky-400 transition-colors pr-10"><button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" onclick="const i=this.previousElementSibling;i.type=i.type==='password'?'text':'password'"><svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></button></div></div>
+        <button type="submit" class="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 bg-indigo-500 rounded-md hover:bg-indigo-400">登录</button>
+      </form>
+      <p class="text-center text-sm mt-4 text-gray-400">没有账号？<button onclick="closeLoginModal()" class="text-red-400 hover:underline">注册账号</button></p>
+    </div>
+  </div>
+</div>
+
 <script>
 const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:8088/api' : 'https://img.okva.cc/api';
 const CATEGORIES = ['AI绘画','优质小姐姐视频','头像','妹子套图','小姐姐视频','手机端-man图片','手机端-动漫图片','手机端-动物图片','手机端-城市图片','手机端-影视图片','手机端-情感图片','手机端-手绘图片','手机端-文字图片','手机端-机械图片','手机端-游戏图片','手机端-物语图片','手机端-美女图片','手机端-视觉图片','手机端-设计图片','手机端-风景图片','手机端壁纸日更','王者荣耀原画壁纸','电脑端-4K图片','电脑端-你的名字图片','电脑端-动漫图片','电脑端-植物图片','电脑端-美女图片','电脑端-谷歌每日图片','抖音','3440X1440壁纸','cos图','cosplay图片','朋友圈背景图','表情包','本人使用壁纸','喵糖映画套图'];
@@ -163,6 +179,9 @@ let allImages = [], lightboxImages = [], lightboxIndex = 0, likes = {}, imgCache
 
 function toggleDark() { document.documentElement.classList.toggle('dark'); localStorage.setItem('dark', document.documentElement.classList.contains('dark')); }
 if (localStorage.getItem('dark') === 'true' || (!localStorage.getItem('dark') && matchMedia('(prefers-color-scheme:dark)').matches)) document.documentElement.classList.add('dark');
+
+function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); document.body.style.overflow = ''; }
 
 function toggleSidebar() { const sb = document.getElementById('sidebar'), ov = document.getElementById('sidebarOverlay'); sb.classList.toggle('-translate-x-full'); sb.classList.toggle('translate-x-0'); ov.classList.toggle('hidden'); }
 function closeSidebar() { if (window.innerWidth >= 1024) return; document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('sidebar').classList.remove('translate-x-0'); document.getElementById('sidebarOverlay').classList.add('hidden'); }
