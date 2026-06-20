@@ -27,9 +27,22 @@ tailwind.config = {
   ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
   .dark ::-webkit-scrollbar-thumb { background: #475569; }
+  /* PJAX progress bar */
+  #pjax-bar { position: fixed; top: 0; left: 0; height: 3px; z-index: 9999; width: 0; background: linear-gradient(90deg, #ec4899, #8b5cf6, #06b6d4); transition: width .3s ease; border-radius: 0 2px 2px 0; }
+  #pjax-bar.loading { width: 60%; transition: width 3s cubic-bezier(.1,.7,.3,1); }
+  #pjax-bar.done { width: 100%; opacity: 0; transition: width .2s ease, opacity .4s ease .2s; }
+  /* Timeline */
+  .timeline-item { position: relative; padding-left: 2rem; }
+  .timeline-item::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: -8px; width: 2px; background: #e5e7eb; }
+  .dark .timeline-item::before { background: #374151; }
+  .timeline-item:last-child::before { display: none; }
+  .timeline-dot { position: absolute; left: 0; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: linear-gradient(135deg, #ec4899, #8b5cf6); }
 </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-700 text-black dark:text-white min-h-screen">
+
+<!-- ====== PJAX PROGRESS BAR ====== -->
+<div id="pjax-bar"></div>
 
 <!-- ====== TOP NAVBAR ====== -->
 <nav class="fixed inset-x-0 top-0 z-[52] bg-white dark:bg-gray-800 border-b border-slate-200 dark:border-slate-800">
@@ -75,6 +88,8 @@ tailwind.config = {
       <img src="icon-home.svg" alt="首页" class="size-6 mr-2"><span>首页</span></a></li>
     <nav class="border-t pt-5 mt-5 dark:text-white dark:border-slate-800">
       <p class="text-gray-400 dark:text-gray-600 text-xs">Pages</p>
+      <a href="#" onclick="navigate(event,'timeline');closeSidebar()" class="nav-link flex items-center px-2 py-1.5 rounded-md my-2 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors" data-page="timeline">
+        <img src="icon-diamond.svg" alt="时间轴" class="size-6 mr-2"><span>时间轴</span></a>
       <a href="#" onclick="randomPost();closeSidebar()" class="flex items-center px-2 py-1.5 rounded-md my-2 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
         <img src="icon-diamond.svg" alt="随便看看" class="size-6 mr-2"><span>随便看看</span></a>
       <a href="#" onclick="navigate(event,'square');closeSidebar()" class="nav-link flex items-center px-2 py-1.5 rounded-md my-2 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors" data-page="square">
@@ -102,6 +117,9 @@ tailwind.config = {
       </div>
       <div id="page-links" class="page-content hidden">
         <div class="max-w-2xl mx-auto" id="linksList"></div>
+      </div>
+      <div id="page-timeline" class="page-content hidden">
+        <div class="max-w-2xl mx-auto" id="timelineList"></div>
       </div>
     </div>
   </div>
@@ -153,7 +171,13 @@ function navigate(e, page) {
   document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
   const t = document.getElementById('page-' + page); if (t) t.classList.remove('hidden');
   window.scrollTo({top: 0, behavior: 'smooth'});
-  if (page === 'square') buildSquare(); if (page === 'links') buildLinks();
+  pjaxStart();
+  setTimeout(() => {
+    if (page === 'square') buildSquare();
+    if (page === 'links') buildLinks();
+    if (page === 'timeline') buildTimeline();
+    pjaxDone();
+  }, 300);
 }
 
 async function fetchImages(cat, count = 30) {
@@ -209,6 +233,36 @@ async function buildSquare() { document.getElementById('bannerSlides').innerHTML
 function renderSquare(imgs) { document.getElementById('squareGrid').innerHTML = imgs.map((img, i) => cardHTML(img, i).replace('masonry-item', '')).join(''); }
 async function filterSquare(cat) { document.querySelectorAll('.sq-tag').forEach(b => { const a = b.textContent === cat || (cat === 'all' && b.textContent === '全部'); b.className = a ? 'px-4 py-1.5 rounded-full bg-sky-500 text-white text-sm font-medium sq-tag' : 'px-4 py-1.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 hover:border-sky-300 text-sm sq-tag'; }); renderSquare(cat === 'all' ? await fetchImages(CATEGORIES[~~(Math.random()*CATEGORIES.length)], 12) : await fetchImages(cat, 12)); }
 function buildLinks() { document.getElementById('linksList').innerHTML = [{ name: 'Hefollo 图库', url: 'https://hefollo.com', desc: '高质量随机图片API' },{ name: '惜染工具箱', url: 'https://meshbit.github.io/my-toolbox/', desc: '98个在线实用工具' },{ name: 'GitHub', url: 'https://github.com/meshbit/image-station', desc: '本站开源仓库' },{ name: 'API 文档', url: 'https://api.hefollo.com', desc: 'Hefollo 图库API接口' }].map(l => `<a href="${l.url}" target="_blank" class="flex items-center gap-4 py-4 px-4 border border-gray-100 dark:border-gray-700 rounded-xl mb-3 hover:shadow-md hover:border-pink-200 transition-all group"><div class="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-100 to-violet-100 dark:from-pink-900/30 dark:to-violet-900/30 flex items-center justify-center text-lg shrink-0">🔗</div><div class="min-w-0"><div class="font-medium group-hover:text-pink-500 transition-colors">${l.name}</div><div class="text-xs text-gray-400">${l.desc}</div></div><svg class="w-4 h-4 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg></a>`).join(''); }
+
+/* PJAX progress bar */
+function pjaxStart() { const b = document.getElementById('pjax-bar'); b.style.opacity = '1'; b.style.width = '0'; requestAnimationFrame(() => { b.classList.add('loading'); }); }
+function pjaxDone() { const b = document.getElementById('pjax-bar'); b.classList.remove('loading'); b.classList.add('done'); setTimeout(() => { b.classList.remove('done'); b.style.width = '0'; b.style.opacity = '1'; }, 600); }
+
+/* Timeline page */
+async function buildTimeline() {
+  const el = document.getElementById('timelineList');
+  el.innerHTML = '<div class="text-center text-gray-400 py-12">加载时间轴…</div>';
+  const all = [];
+  for (const cat of CATEGORIES.slice(0, 18)) {
+    const imgs = await fetchImages(cat, 2);
+    all.push({ cat, imgs });
+  }
+  const now = new Date();
+  let html = '';
+  for (let m = 5; m >= 0; m--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - m, 1);
+    const label = d.getFullYear() + '年' + (d.getMonth() + 1) + '月';
+    const groupImgs = all.filter((_, i) => i % 6 === m).flatMap(g => g.imgs);
+    if (!groupImgs.length) continue;
+    html += '<div class="timeline-item pb-8"><div class="timeline-dot"></div><div class="text-lg font-bold mb-3">' + label + '</div><div class="grid grid-cols-2 sm:grid-cols-3 gap-3">';
+    groupImgs.forEach((img, i) => {
+      const id = 'tl-' + m + '-' + i;
+      html += '<a href="#" onclick="openLightbox(event,\'' + id + '\')" class="rounded-lg overflow-hidden block shadow hover:shadow-lg transition-shadow group/card" data-id="' + id + '" data-url="' + img.url + '" data-title="' + img.category + '"><div class="aspect-square bg-gray-100 dark:bg-gray-800 relative overflow-hidden"><img src="' + img.url + '" loading="lazy" class="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-500" onerror="this.parentElement.parentElement.style.display=\'none\'"><div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-2"><span class="text-white text-xs line-clamp-1">' + img.category + '</span></div></div></a>';
+    });
+    html += '</div></div>';
+  }
+  el.innerHTML = html || '<div class="text-center text-gray-400 py-12">暂无归档内容</div>';
+}
 
 setTimeout(() => { const io = new IntersectionObserver(e => { if (e[0].isIntersecting && !document.getElementById('page-home').classList.contains('hidden')) loadMore(); }, { threshold: 0.1 }); const btn = document.getElementById('loadMoreBtn'); if (btn) io.observe(btn); }, 2000);
 document.addEventListener('keydown', e => { if (document.getElementById('lightbox').classList.contains('hidden')) return; if (e.key === 'ArrowRight') lightboxNext(); if (e.key === 'ArrowLeft') lightboxPrev(); if (e.key === 'Escape') closeLightbox(); });
